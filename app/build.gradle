@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'android-L'
+    compileSdkVersion 19
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         applicationId "reader.disqus.com.disqusreader"
-        minSdkVersion 'L'
-        targetSdkVersion 'L'
+        minSdkVersion 19
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
@@ -17,6 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.processResources.manifestFile = file('src/main/AndroidManifest.xml')
+        variant.processManifest.enabled=false
+    }
 }
 
 dependencies {
@@ -25,4 +30,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.android.support:support-v4:20+'
     compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:cardview-v7:+'
 }
