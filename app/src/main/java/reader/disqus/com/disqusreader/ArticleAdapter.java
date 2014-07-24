@@ -55,6 +55,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         });
     }
 
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        holder.imageView.setImageUrl(null, mVolleyUtils.getImageLoader());
+    }
+
     protected void handleClick(Article article) {
     }
 
