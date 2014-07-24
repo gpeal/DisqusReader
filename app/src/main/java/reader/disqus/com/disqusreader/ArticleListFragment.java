@@ -1,6 +1,7 @@
 package reader.disqus.com.disqusreader;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,17 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleListFragment extends Fragment {
@@ -30,7 +21,6 @@ public class ArticleListFragment extends Fragment {
     private View mLoadingContainer;
     private RecyclerView mRecyclerView;
     private ArticleAdapter mAdapter;
-    private VolleyUtils mVolleyUtils;
     private List<Article> mArticles;
 
     @Override
@@ -42,6 +32,9 @@ public class ArticleListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.article_list, container, false);
+        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActivity().getActionBar().setHomeButtonEnabled(true);
+        getActivity().setTitle(getString(R.string.app_name));
 
         mLoadingContainer = view.findViewById(R.id.loading_container);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -49,35 +42,25 @@ public class ArticleListFragment extends Fragment {
         mAdapter = new ArticleAdapter(getActivity()) {
             @Override
             protected void handleClick(Article article) {
-                Intent intent = new Intent(getActivity(), ArticleActivity.class);
-                intent.putExtra(ArticleActivity.KEY_URL, article.getUrl());
-                startActivity(intent);
+                ArticleFragment frag = new ArticleFragment();
+                Bundle args = new Bundle();
+                args.putString(ArticleFragment.KEY_URL, article.getUrl());
+                frag.setArguments(args);
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.content, frag)
+                        .addToBackStack(null)
+                        .commit();
             }
         };
-
-        mVolleyUtils = VolleyUtils.getInstance(getActivity());
-
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_ARTICLES)) {
-            mArticles = savedInstanceState.getParcelableArrayList(KEY_ARTICLES);
-            Log.d(TAG, "Restored " + mArticles.size() + " articles.");
-            mAdapter.setArticles(mArticles);
-        } else {
-            Log.d(TAG, "Fetching new articles.");
-            fetchArticles();
-        }
-
         mRecyclerView.setAdapter(mAdapter);
+
+        fetchArticles();
         return view;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mVolleyUtils.getRequestQueue().cancelAll(this);
-    }
-
     private void fetchArticles() {
-        mVolleyUtils.fetchArticles(false, new VolleyUtils.ArticleCallback() {
+        VolleyUtils.getInstance(getActivity()).fetchArticles(false, new VolleyUtils.ArticleCallback() {
             @Override
             public void onArticlesLoaded(List<Article> articles) {
                 Log.d(TAG, "Got " + articles.size() + " articles.");

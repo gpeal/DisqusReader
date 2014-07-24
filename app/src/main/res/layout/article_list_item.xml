@@ -7,8 +7,13 @@
     android:layout_gravity="center_horizontal"
     android:layout_width="match_parent"
     android:layout_height="@dimen/article_card_height"
+    android:layout_marginTop="@dimen/article_card_divider_height"
     android:layout_marginBottom="16dp"
     card_view:cardCornerRadius="0dp" >
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/article_card_bg" />
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/image"
         android:layout_width="match_parent"

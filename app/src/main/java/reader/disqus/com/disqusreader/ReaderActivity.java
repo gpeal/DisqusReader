@@ -2,6 +2,8 @@ package reader.disqus.com.disqusreader;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 
 
@@ -24,6 +27,7 @@ public class ReaderActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.reader_activity);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -34,8 +38,13 @@ public class ReaderActivity extends Activity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                int backStackEntryCount = getFragmentManager().getBackStackEntryCount();
+                mDrawerToggle.setDrawerIndicatorEnabled(backStackEntryCount == 0);
+            }
+        });
 
         getFragmentManager()
                 .beginTransaction()
@@ -51,9 +60,13 @@ public class ReaderActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle.isDrawerIndicatorEnabled() && mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else if (item.getItemId() == android.R.id.home &&
+                getFragmentManager().popBackStackImmediate()) {
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 }
