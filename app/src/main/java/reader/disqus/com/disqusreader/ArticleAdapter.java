@@ -1,10 +1,12 @@
 package reader.disqus.com.disqusreader;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -39,7 +41,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         final Article article = mArticles.get(position);
         viewHolder.titleView.setText(article.getTitle());
-        viewHolder.descriptionView.setText(article.getDescription());
         viewHolder.imageView.setDefaultImageResId(R.drawable.article_image_placeholder);
         viewHolder.imageView.setImageUrl(article.getImageUrl(), mVolleyUtils.getImageLoader());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +55,8 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 handleSignalsClick(article);
             }
         });
+        Uri uri = Uri.parse(article.getUrl());
+        viewHolder.sourceView.setText(uri.getHost());
     }
 
     protected void handleSignalsClick(Article article) {
@@ -74,15 +77,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     public static final class ViewHolder extends RecyclerView.ViewHolder {
         public NetworkImageView imageView;
         public TextView titleView;
-        public TextView descriptionView;
-        public TextView signalsView;
+        public ImageButton signalsView;
+        public TextView sourceView;
 
         public ViewHolder(View view) {
             super(view);
             imageView = (NetworkImageView) view.findViewById(R.id.image);
             titleView = (TextView) view.findViewById(R.id.title);
-            descriptionView = (TextView) view.findViewById(R.id.description);
-            signalsView = (TextView) view.findViewById(R.id.signals);
+            signalsView = (ImageButton) view.findViewById(R.id.signals);
+            sourceView = (TextView) view.findViewById(R.id.source);
         }
     }
 }

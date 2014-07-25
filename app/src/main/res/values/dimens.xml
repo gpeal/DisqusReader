@@ -7,6 +7,5 @@
     <dimen name="article_card_divider_height">16dp</dimen>
     <dimen name="article_card_height">400dp</dimen>
     <dimen name="article_card_image_margin">8dp</dimen>
-    <dimen name="article_image_height">176dp</dimen>
     <dimen name="article_list_item_text_horizontal_margin">24dp</dimen>
 </resources>
