@@ -12,19 +12,18 @@ import android.view.animation.LinearInterpolator;
 
 public class LoadingSpinner extends View {
     private static final int[] COLORS = {
-            0xFF0059BF,
-            0xFF003B80,
-            0xFF0076FF,
-            0xFF001E40,
-            0xFF006BE6,
-            0xFF0076FF
+            0xFFFFFFFF,
+            0xFFFFFFFF,
+            0xFFFFFFFF,
+            0xFFFFFFFF,
+            0xFFFFFFFF,
+            0xFFFFFFFF
     };
-    private static final int SPINNER_RADIUS = 250;
-    private static final int CIRCLE_RADIUS = 40;
-    private static final int PERIOD = 2000;
+    private static final int SPINNER_RADIUS = 175;
+    private static final int CIRCLE_RADIUS = 25;
+    private static final int PERIOD = 1200;
 
     private final Paint mPaint;
-    private final long mStartTime;
     private final ValueAnimator mSpinnerAnimator;
 
     private int mSpinnerRadius = SPINNER_RADIUS;
@@ -44,7 +43,6 @@ public class LoadingSpinner extends View {
 
     public LoadingSpinner(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mStartTime = System.currentTimeMillis();
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
@@ -84,9 +82,8 @@ public class LoadingSpinner extends View {
         finishAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float val = (Float) animation.getAnimatedValue();
-                mSpinnerRadius = (int) ((float) SPINNER_RADIUS * val);
-                mCircleRadius = (int) ((float) CIRCLE_RADIUS * val);
+                mSpinnerRadius = (int) ((float) SPINNER_RADIUS * (Float) animation.getAnimatedValue());
+                mCircleRadius = (int) ((float) CIRCLE_RADIUS * (Float) animation.getAnimatedValue());
             }
         });
         finishAnimator.addListener(new AnimatorListener() {

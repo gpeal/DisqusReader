@@ -20,11 +20,9 @@ import java.util.ArrayList;
 
 public class ReaderActivity extends Activity {
     private static final String TAG = "ReaderActivity";
-    private static final String KEY_ARTICLE_LIST_FRAGMENT = "article_list_fragment";
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-    private ArticleListFragment mArticleListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

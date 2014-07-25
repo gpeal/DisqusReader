@@ -27,7 +27,7 @@ public class ArticleListFragment extends Fragment {
 
     private LoadingSpinner mSpinner;
     private RecyclerView mRecyclerView;
-    private View mContainer;
+    private View mLoadingBackground;
     private ArticleAdapter mAdapter;
     private List<Article> mArticles;
 
@@ -44,7 +44,7 @@ public class ArticleListFragment extends Fragment {
         getActivity().getActionBar().setHomeButtonEnabled(true);
         getActivity().setTitle(getString(R.string.app_name));
 
-        mContainer = view.findViewById(R.id.container);
+        mLoadingBackground = view.findViewById(R.id.loading_background);
         mSpinner = (LoadingSpinner) view.findViewById(R.id.spinner);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -89,19 +89,11 @@ public class ArticleListFragment extends Fragment {
                             mSpinner.setVisibility(View.GONE);
                             mRecyclerView.setVisibility(View.VISIBLE);
                             Animator alpha = ObjectAnimator.ofFloat(mRecyclerView, "alpha", 0f, 1f)
-                                    .setDuration(100);
+                                    .setDuration(200);
                             Animator translate = ObjectAnimator.ofFloat(mRecyclerView, "translationY", 200f, 0f)
                                     .setDuration(400);
-                            int backgroundColor = getResources().getColor(R.color.loading_background_color);
-                            int initialValue = Color.red(backgroundColor);
-                            ValueAnimator background = ValueAnimator.ofInt(initialValue, 240).setDuration(400);
-                            background.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                @Override
-                                public void onAnimationUpdate(ValueAnimator animation) {
-                                    int val = (Integer) animation.getAnimatedValue();
-                                    mContainer.setBackgroundColor(Color.argb(255, val, val, val));
-                                }
-                            });
+                            Animator background = ObjectAnimator.ofFloat(mLoadingBackground, "alpha", 1f, 0f)
+                                    .setDuration(400);
                             AnimatorSet animatorSet = new AnimatorSet();
                             animatorSet.play(alpha).with(translate).with(background);
                             animatorSet.start();
@@ -111,6 +103,9 @@ public class ArticleListFragment extends Fragment {
                 } else {
                     mSpinner.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
+                    Animator background = ObjectAnimator.ofFloat(mLoadingBackground, "alpha", 0.6f, 0f)
+                            .setDuration(400);
+                    background.start();
                 }
             }
         });
