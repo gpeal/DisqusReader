@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+
 
 public class ReaderActivity extends Activity {
     private static final String TAG = "ReaderActivity";
@@ -68,5 +70,17 @@ public class ReaderActivity extends Activity {
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    void showSignals(ArrayList<String> signals) {
+        SignalsFragment frag = new SignalsFragment();
+        Bundle args = new Bundle();
+        args.putStringArrayList(SignalsFragment.KEY_SIGNALS, signals);
+        frag.setArguments(args);
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.content, frag, "signals")
+                .addToBackStack(null)
+                .commit();
     }
 }

@@ -23,11 +23,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         setArticles(new ArrayList<Article>());
     }
 
-    public ArticleAdapter(Context context, List<Article> articles) {
-        mVolleyUtils = VolleyUtils.getInstance(context);
-        setArticles(articles);
-    }
-
     public void setArticles(List<Article> articles) {
         mArticles = articles;
         notifyDataSetChanged();
@@ -53,13 +48,16 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 handleClick(article);
             }
         });
+        viewHolder.signalsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSignalsClick(article);
+            }
+        });
     }
 
-    @Override
-    public void onViewRecycled(ViewHolder holder) {
-        holder.imageView.setImageUrl(null, mVolleyUtils.getImageLoader());
+    protected void handleSignalsClick(Article article) {
     }
-
     protected void handleClick(Article article) {
     }
 
@@ -68,17 +66,23 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         return mArticles.size();
     }
 
-    public static final class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public long getItemId(int position) {
+        return (long) mArticles.get(position).getUrl().hashCode();
+    }
 
+    public static final class ViewHolder extends RecyclerView.ViewHolder {
         public NetworkImageView imageView;
         public TextView titleView;
         public TextView descriptionView;
+        public TextView signalsView;
 
         public ViewHolder(View view) {
             super(view);
             imageView = (NetworkImageView) view.findViewById(R.id.image);
             titleView = (TextView) view.findViewById(R.id.title);
             descriptionView = (TextView) view.findViewById(R.id.description);
+            signalsView = (TextView) view.findViewById(R.id.signals);
         }
     }
 }

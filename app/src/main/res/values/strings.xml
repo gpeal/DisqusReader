@@ -9,4 +9,6 @@
     <string name="loading">Loading</string>
     <string name="loading_articles">Loading Articles</string>
     <string name="error_loading_articles">Error loading articles!</string>
+    <string name="signals">Signals</string>
+    <string name="no_signals">No Signals</string>
 </resources>

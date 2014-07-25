@@ -2,7 +2,6 @@ package reader.disqus.com.disqusreader;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleListFragment extends Fragment {
@@ -38,6 +38,7 @@ public class ArticleListFragment extends Fragment {
 
         mLoadingContainer = view.findViewById(R.id.loading_container);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new ArticleAdapter(getActivity()) {
             @Override
@@ -52,7 +53,13 @@ public class ArticleListFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
             }
+
+            @Override
+            protected void handleSignalsClick(Article article) {
+                ((ReaderActivity) getActivity()).showSignals((ArrayList<String>) article.getSignals());
+            }
         };
+        mAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mAdapter);
 
         fetchArticles();

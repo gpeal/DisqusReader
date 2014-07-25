@@ -32,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/article_list_horizontal_margin"
-        android:layout_marginRight="@dimen/article_list_horizontal_margin" >
+        android:layout_marginRight="@dimen/article_list_horizontal_margin"
+        android:scrollbars="vertical" >
     </android.support.v7.widget.RecyclerView>
 </FrameLayout>
