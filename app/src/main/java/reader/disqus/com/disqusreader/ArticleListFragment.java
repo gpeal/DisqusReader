@@ -1,7 +1,12 @@
 package reader.disqus.com.disqusreader;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,10 +21,13 @@ import java.util.List;
 public class ArticleListFragment extends Fragment {
     private static final String TAG = "ArticleListFragment";
     private static final boolean DBG = true;
-    private static final String KEY_ARTICLES = "articles";
 
-    private View mLoadingContainer;
+    /** Used to animate the spinner on the first launch only */
+    private static boolean IS_FIRST_LAUNCH = true;
+
+    private LoadingSpinner mSpinner;
     private RecyclerView mRecyclerView;
+    private View mContainer;
     private ArticleAdapter mAdapter;
     private List<Article> mArticles;
 
@@ -36,7 +44,8 @@ public class ArticleListFragment extends Fragment {
         getActivity().getActionBar().setHomeButtonEnabled(true);
         getActivity().setTitle(getString(R.string.app_name));
 
-        mLoadingContainer = view.findViewById(R.id.loading_container);
+        mContainer = view.findViewById(R.id.container);
+        mSpinner = (LoadingSpinner) view.findViewById(R.id.spinner);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -73,8 +82,36 @@ public class ArticleListFragment extends Fragment {
                 Log.d(TAG, "Got " + articles.size() + " articles.");
                 mArticles = articles;
                 mAdapter.setArticles(mArticles);
-                mLoadingContainer.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
+                if (IS_FIRST_LAUNCH) {
+                    mSpinner.finish(new LoadingSpinner.Callback() {
+                        @Override
+                        public void onComplete() {
+                            mSpinner.setVisibility(View.GONE);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            Animator alpha = ObjectAnimator.ofFloat(mRecyclerView, "alpha", 0f, 1f)
+                                    .setDuration(100);
+                            Animator translate = ObjectAnimator.ofFloat(mRecyclerView, "translationY", 200f, 0f)
+                                    .setDuration(400);
+                            int backgroundColor = getResources().getColor(R.color.loading_background_color);
+                            int initialValue = Color.red(backgroundColor);
+                            ValueAnimator background = ValueAnimator.ofInt(initialValue, 240).setDuration(400);
+                            background.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animation) {
+                                    int val = (Integer) animation.getAnimatedValue();
+                                    mContainer.setBackgroundColor(Color.argb(255, val, val, val));
+                                }
+                            });
+                            AnimatorSet animatorSet = new AnimatorSet();
+                            animatorSet.play(alpha).with(translate).with(background);
+                            animatorSet.start();
+                        }
+                    });
+                    IS_FIRST_LAUNCH = false;
+                } else {
+                    mSpinner.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
             }
         });
     }

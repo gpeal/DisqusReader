@@ -4,4 +4,5 @@
     <color name="list_item_divider_color">#ffdbdbdb</color>
     <color name="article_card_pressed">#33cccccc</color>
     <color name="article_card_normal">#ffffff</color>
+    <color name="loading_background_color">#ff7b7b7b</color>
 </resources>
