@@ -1,6 +1,7 @@
 package reader.disqus.com.disqusreader;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -86,7 +87,7 @@ public class LoadingSpinner extends View {
                 mCircleRadius = (int) ((float) CIRCLE_RADIUS * (Float) animation.getAnimatedValue());
             }
         });
-        finishAnimator.addListener(new AnimatorListener() {
+        finishAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 cb.onComplete();

@@ -1,37 +1,37 @@
 package reader.disqus.com.disqusreader;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Fragment;
-import android.graphics.Color;
-import android.graphics.Interpolator;
-import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.widget.TextView;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+@EFragment(R.layout.signals)
 public class SignalsFragment extends Fragment {
-    public static final String KEY_SIGNALS = "signals";
+
+    @ViewById(R.id.signals) RecyclerView mRecyclerView;
+    @ViewById(R.id.scrim) View mScrim;
+
+    @FragmentArg ArrayList<String> signals;
 
     private CharSequence mExistingTitle;
-    private RecyclerView mRecyclerView;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.signals, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.signals);
+    @AfterViews
+    void afterViews() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final ArrayList<String> signals = getArguments().getStringArrayList(KEY_SIGNALS);
         if (signals.isEmpty()) {
             signals.add(getString(R.string.no_signals));
         }
@@ -54,18 +54,9 @@ public class SignalsFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.touch_interceptor).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
         startAnimation();
         mExistingTitle = getActivity().getTitle();
         getActivity().setTitle(getString(R.string.signals));
-
-        return view;
     }
 
     @Override
@@ -83,59 +74,30 @@ public class SignalsFragment extends Fragment {
         }
     }
 
+    @Click(R.id.touch_interceptor)
+    void onTouchIntercepted() {
+        finish();
+    }
+
     private void startAnimation() {
-        Animator translationY = ObjectAnimator.ofFloat(mRecyclerView, "translationY", 2000, 0)
-                .setDuration(300);
-        translationY.setStartDelay(150);
-        Animator alpha = ObjectAnimator.ofFloat(mRecyclerView, "alpha", mRecyclerView.getAlpha(), 1)
-                .setDuration(200);
-        alpha.setStartDelay(300);
-        ValueAnimator background = ValueAnimator.ofInt(0, 200).setDuration(300);
-        background.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (Integer) animation.getAnimatedValue();
-                if (getView() != null) {
-                    getView().setBackgroundColor(Color.argb(value, 0, 0, 0));
-                }
-            }
-        });
-        AnimatorSet set = new AnimatorSet();
-        set.play(background);
-        set.play(translationY);
-        set.play(alpha);
-        set.start();
+        mRecyclerView.setTranslationY(2000);
+        ViewCompat.animate(mRecyclerView).translationY(0).setDuration(300).setStartDelay(150).start();
+        ViewCompat.animate(mRecyclerView).alpha(1).setDuration(200).setStartDelay(300).start();
+        ViewCompat.animate(mScrim).alpha(.78f).setDuration(300).start();
     }
 
     private void finish() {
-        Animator translationY = ObjectAnimator.ofFloat(mRecyclerView, "translationY", 0, 2000)
-                .setDuration(400);
-        Animator alpha = ObjectAnimator.ofFloat(mRecyclerView, "alpha", mRecyclerView.getAlpha(), 0)
-                .setDuration(200);
-        alpha.setStartDelay(200);
-        ValueAnimator background = ValueAnimator.ofInt(200, 0).setDuration(400);
-        background.setInterpolator(new AccelerateInterpolator());
-        background.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (Integer) animation.getAnimatedValue();
-                if (getView() != null) {
-                    getView().setBackgroundColor(Color.argb(value, 0, 0, 0));
-                }
-            }
-        });
-        AnimatorSet set = new AnimatorSet();
-        set.play(background);
-        set.play(translationY);
-        set.play(alpha);
-        set.addListener(new AnimatorListener() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (getFragmentManager() != null) {
-                    getFragmentManager().popBackStackImmediate();
-                }
-            }
-        });
-        set.start();
+        ViewCompat.animate(mRecyclerView).translationY(2000).setDuration(400).start();
+        ViewCompat.animate(mRecyclerView).alpha(0).setDuration(400).setStartDelay(200).start();
+        ViewCompat.animate(mScrim).alpha(0)
+                .setInterpolator(new AccelerateInterpolator())
+                .setDuration(400)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().getFragmentManager().popBackStackImmediate();
+                    }
+                })
+                .start();
     }
 }

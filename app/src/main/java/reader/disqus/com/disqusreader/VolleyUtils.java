@@ -16,38 +16,28 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.List;
 
+@EBean(scope = EBean.Scope.Singleton)
 public class VolleyUtils {
     private static final String TAG = "VolleyUtils";
     private static final String URL = "http://jetowls.com:6969/api/content";
-
-    private static VolleyUtils sInstance = null;
-
-    public static VolleyUtils getInstance(Context context) {
-        if (sInstance == null) {
-            sInstance = new VolleyUtils(context);
-        }
-        return sInstance;
-    }
 
     public interface ArticleCallback {
         public void onArticlesLoaded(List<Article> articles);
     }
 
-    private final Context mContext;
+    @RootContext Context mContext;
 
     private ImageLoader mImageLoader;
     private RequestQueue mRequestQueue;
     private List<Article> mArticles;
-
-    private VolleyUtils(Context context) {
-        mContext = context;
-    }
 
     public ImageLoader getImageLoader() {
         if (mImageLoader == null) {

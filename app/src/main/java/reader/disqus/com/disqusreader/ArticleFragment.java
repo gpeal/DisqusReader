@@ -1,44 +1,36 @@
 package reader.disqus.com.disqusreader;
 
 import android.app.Fragment;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ViewById;
+
+@EFragment(R.layout.article)
 public class ArticleFragment extends Fragment {
-    public static final String KEY_URL = "url";
+    @ViewById(R.id.web_view) WebView mWebView;
+    @ViewById(R.id.progress_bar) ProgressBar mProgressBar;
 
-    private WebView mWebView;
-    private ProgressBar mProgressBar;
+    @FragmentArg String url;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.article, container, false);
-
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+    @AfterViews
+    public void afterViews() {
         mProgressBar.setMax(100);
-        mWebView = (WebView) view.findViewById(R.id.web_view);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setSupportZoom(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDisplayZoomControls(false);
-        mWebView.getSettings().setLoadWithOverviewMode(true);
-        mWebView.getSettings().setUseWideViewPort(true);
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -48,9 +40,6 @@ public class ArticleFragment extends Fragment {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (getActivity() != null) {
-                    getActivity().setProgressBarIndeterminateVisibility(false);
-                }
                 mProgressBar.setVisibility(View.GONE);
             }
         });
@@ -68,11 +57,8 @@ public class ArticleFragment extends Fragment {
                 mProgressBar.setProgress(newProgress);
             }
         });
-        getActivity().setTitle(getString(R.string.loading));
-        mWebView.loadUrl(getArguments().getString(KEY_URL));
-        getActivity().setProgressBarIndeterminateVisibility(true);
 
-        view.setOnKeyListener(new View.OnKeyListener() {
+        getView().setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -85,12 +71,7 @@ public class ArticleFragment extends Fragment {
             }
         });
 
-        return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getActivity().setProgressBarIndeterminateVisibility(false);
+        getActivity().setTitle(getString(R.string.loading));
+        mWebView.loadUrl(url);
     }
 }

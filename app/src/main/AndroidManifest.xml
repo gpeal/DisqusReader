@@ -13,19 +13,13 @@
         android:label="@string/app_name"
         android:theme="@style/Theme" >
         <activity
-            android:name=".ReaderActivity"
+            android:name=".ReaderActivity_"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".ArticleActivity"
-            android:parentActivityName=".ReaderActivity"
-            android:screenOrientation="portrait" >
         </activity>
     </application>
 

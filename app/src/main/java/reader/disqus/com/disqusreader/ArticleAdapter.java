@@ -11,17 +11,25 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@EBean
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
-    private final VolleyUtils mVolleyUtils;
+    @Bean VolleyUtils mVolleyUtils;
 
     private List<Article> mArticles;
+    private ArticleListFragment mFragment;
 
     public ArticleAdapter(Context context) {
-        mVolleyUtils = VolleyUtils.getInstance(context);
+    }
+
+    public void init(ArticleListFragment fragment) {
+        mFragment = fragment;
         setArticles(new ArrayList<Article>());
     }
 
@@ -46,22 +54,17 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                handleClick(article);
+                mFragment.onArticleClicked(article);
             }
         });
         viewHolder.signalsView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                handleSignalsClick(article);
+                mFragment.onArticleSignalsClicked(article);
             }
         });
         Uri uri = Uri.parse(article.getUrl());
         viewHolder.sourceView.setText(uri.getHost());
-    }
-
-    protected void handleSignalsClick(Article article) {
-    }
-    protected void handleClick(Article article) {
     }
 
     @Override

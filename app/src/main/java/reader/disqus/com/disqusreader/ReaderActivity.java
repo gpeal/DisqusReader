@@ -3,35 +3,27 @@ package reader.disqus.com.disqusreader;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.FrameLayout;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
-
+@EActivity(R.layout.reader_activity)
 public class ReaderActivity extends Activity {
-    private static final String TAG = "ReaderActivity";
+
+    @ViewById(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
     private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.reader_activity);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+    @AfterViews
+    void afterViews() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer,
                 R.string.open_drawer, R.string.close_drawer);
 
@@ -48,7 +40,7 @@ public class ReaderActivity extends Activity {
 
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, new ArticleListFragment())
+                .replace(R.id.content, new ArticleListFragment_())
                 .commit();
     }
 
@@ -71,10 +63,7 @@ public class ReaderActivity extends Activity {
     }
 
     void showSignals(ArrayList<String> signals) {
-        SignalsFragment frag = new SignalsFragment();
-        Bundle args = new Bundle();
-        args.putStringArrayList(SignalsFragment.KEY_SIGNALS, signals);
-        frag.setArguments(args);
+        Fragment frag = SignalsFragment_.builder().signals(signals).build();
         getFragmentManager()
                 .beginTransaction()
                 .add(R.id.content, frag, "signals")

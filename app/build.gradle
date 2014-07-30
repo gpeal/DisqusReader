@@ -1,4 +1,18 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+def AAVersion = '3.0.1'
+
+dependencies {
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations-api:$AAVersion"
+}
+
+apt {
+    arguments {
+        androidManifestFile variant.processResources.manifestFile
+        resourcePackageName 'reader.disqus.com.disqusreader'
+    }
+}
 
 android {
     compileSdkVersion 19
@@ -17,6 +31,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main.java.srcDirs += 'build/generated/source/apt/debug/reader.disqus.com.disqusreader'
+    }
+
 
     applicationVariants.all { variant ->
         variant.processResources.manifestFile = file('src/main/AndroidManifest.xml')
